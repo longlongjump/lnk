@@ -18,6 +18,8 @@ enum TokenType
     TokenTypeRBrace, // )
     TokenTypeLRBrace, // [
     TokenTypeRRBrace, // ]
+    TokenTypeLCBrace, // {
+    TokenTypeRCBrace, // }
     TokenTypeEOF
 
   };
@@ -37,6 +39,8 @@ static const char *tokenNames[] =
    "TokenTypeRBrace",
    "TokenTypeLRBrace",
    "TokenTypeRRBrace",
+   "TokenTypeRCBrace",
+   "TokenTypeLCBrace",
    "TokenTypeEOF"
   };
 
@@ -67,6 +71,11 @@ Token(TokenType type, size_t position, size_t length):
 Token():
   tokenType(TokenTypeNone),range(0,0)
   {
+  }
+
+  isKind(TokenType type) const
+  {
+    return type == tokentype;
   }
 
 };

@@ -1,6 +1,8 @@
 #ifndef NODE_H
 #define NODE_H
 #include <tr1/memory>
+#include <string>
+#include "Visitor.hh"
 
 namespace std{ using namespace tr1; }
 
@@ -14,18 +16,19 @@ namespace lnk
   public:
     Node(){}
     virtual ~Node(){}
+    Node *parent;
     std::shared_ptr<Node> left,right;
 
-    void accept(Visitor *visitor)
+    void accept(Visitor &visitor)
     {
-      visitor->visit(*this);
+      visitor.visit(*this);
     }
   };
 
 
   class FetchResult: public Node
   {
-    
+    int index;
   };
 
   class Expression : public Node
@@ -36,7 +39,7 @@ namespace lnk
 
   class KeyResultNode: public Node
   {
-    std::string &key;
+    std::string key;
   };
 
   class IndexResultNode: public Node
@@ -46,6 +49,16 @@ namespace lnk
 
   class FetchNode: public Node
   {
+  public:
+    std::string name;
+  };
+
+  class FetchPath: public Node
+  {
+  };
+
+  class FetchExpression: public Node
+  {
   };
 
 
@@ -54,12 +67,12 @@ namespace lnk
     
   };
 
-  class SelectExpression: public Expression
+  class SelectExpression: public Node
   {
   public:
-    virtual void addPredicate(std::shared_ptr<Node> predicate);
-    virtual void addFetchResult(std::shared_ptr<Node> fetchResult);
-    virtual ~SelectExpression();
+    virtual void addPredicate(std::shared_ptr<Node> predicate){}
+    virtual void addFetchResult(std::shared_ptr<Node> fetchResult){}
+    virtual ~SelectExpression(){}
   };
 
   
