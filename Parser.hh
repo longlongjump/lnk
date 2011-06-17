@@ -33,28 +33,16 @@ public:
   Parser()
   {}
 
-
-  void readListResult(lnk::SelectExpression &expr)
+  void nextToken()
   {
-    if (currentToken.isKind(TokenTypeName))
-      {
-	
-      }
+    lex.getToken(currentToken);
   }
 
-  void readDictResult(lnk::SelectExpression &expr)
-  {
-    
-  }
-
- 
-
-  void select(lnk::SelectExpression &expr)
+  void readExpression(lnk::SelectExpression &expr)
   {
     if (currentToken.isKind(TokenTypeLRBrace))
       {
 	ListResult *listResult = new ListResult;
-	lex.getToken(currentToken);
 	readListResult(expr);
 	throw_if_not_equal(currentToken,TokenTypeRRBrace,
 			   "missing ]");
@@ -67,12 +55,44 @@ public:
 			   "missing }")
 
       }
-    else
-      {
-	throw_parse_error("should start with [ or {");
-      }
 
-   
+    else if(currentToken.isKind(TokenTypeName))
+      {
+	readExpression()
+      }
+    
+  }
+
+  void readListResult(lnk::SelectExpression &expr, ListResult *result)
+  { 
+    nextToken();// skip [
+    while(currentToken.isKind(TokenTypeName) || 
+	  currentToken.isKind(TokenTypeLRBrace) ||
+	  currentToken.isKind(TokenTypeLCBrace))
+      {
+	readExpression()
+      }
+    
+    throw_if_not_equal(currentToken,TokenTypeRRBrace,
+		       "missing ]");
+    nextToken(); //skip ]
+      
+    
+  }
+
+  void readDictResult(lnk::SelectExpression &expr)
+  {
+     if (currentToken.isKind(TokenTypeName))
+      {
+	
+      }
+  }
+
+ 
+
+  void select(lnk::SelectExpression &expr)
+  {
+    readExpression();
   }
 
   std::shared_ptr<lnk::Expression> parse(std::string & source)
